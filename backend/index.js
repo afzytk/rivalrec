@@ -1,18 +1,24 @@
+require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
+const { toNodeHandler } = require("better-auth/node");
+
+const prisma = require("./db");
+const auth = require("./auth");
+
 const app = express();
-const { PrismaClient } = require("@prisma/client");
-const { Pool } = require("pg");
-const { PrismaPg } = require("@prisma/adapter-pg");
 const PORT = 3000;
-require("dotenv").config();
 
-const pool = new Pool({ connectionString: process.env.DATABASE_URL });
-const adapter = new PrismaPg(pool);
-const prisma = new PrismaClient({ adapter });
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  }),
+);
 
-app.use(cors());
 app.use(express.json());
+
+app.all("/api/auth/*path", toNodeHandler(auth));
 
 app.get("/", (req, res) => {
   res.send("Welcome to the RivalRec API");
