@@ -15,7 +15,7 @@ model Match {
   id        Int      @id @default(autoincrement())
   player1   String
   player2   String
-  score     String
-  status    String   @default("completed")
+  player1Goals    Int
+  player2Goals    Int
   createdAt DateTime @default(now())
 }
