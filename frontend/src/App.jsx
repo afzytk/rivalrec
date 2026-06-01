@@ -1,47 +1,31 @@
 import { useState, useEffect } from "react";
+import MatchForm from "./components/MatchForm";
+import MatchList from "./components/MatchList";
 
-const App = () => {
+function App() {
   const [matches, setMatches] = useState([]);
 
   useEffect(() => {
     fetch("http://localhost:3000/api/matches")
-      .then((response) => response.json())
+      .then((res) => res.json())
       .then((data) => setMatches(data))
-      .catch((error) => console.error("Error fetching data:", error));
+      .catch((err) => console.error("Error fetching data:", err));
   }, []);
 
+  const handleMatchAdded = (newMatch) => {
+    setMatches([newMatch, ...matches]);
+  };
+
   return (
-    <div className="min-h-screen bg-black text-white p-8">
-      <h1 className="text-4xl font-extrabold text-white mb-8 text-center">
-        RivalRec Match History
+    <div className="min-h-screen bg-gray-900 text-white p-8">
+      <h1 className="text-4xl font-extrabold text-blue-500 mb-8 text-center">
+        RivalRec ⚽
       </h1>
 
-      <div className="max-w-2xl mx-auto space-y-4">
-        {matches.map((match) => (
-          <div
-            key={match.id}
-            className="bg-gray-800 p-6 rounded-lg border border-white-700 flex justify-between items-center shadow-lg"
-          >
-            <div className="text-xl font-bold">
-              <span className="text-blue-400">{match.player1}</span>
-              <span className="mx-4 text-gray-500">vs</span>
-              <span className="text-red-400">{match.player2}</span>
-            </div>
-
-            <div className="text-2xl font-black bg-gray-900 px-4 py-2 rounded">
-              {match.score}
-            </div>
-
-            <div
-              className={`text-sm font-bold uppercase ${match.status === "completed" ? "text-green-500" : "text-yellow-500"}`}
-            >
-              {match.status}
-            </div>
-          </div>
-        ))}
-      </div>
+      <MatchForm onMatchAdded={handleMatchAdded} />
+      <MatchList matches={matches} />
     </div>
   );
-};
+}
 
 export default App;
