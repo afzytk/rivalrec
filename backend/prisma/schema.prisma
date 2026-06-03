@@ -22,6 +22,7 @@ model User {
   updatedAt     DateTime
   sessions      Session[]
   accounts      Account[]
+   matches       Match[] 
 }
 
 model Session {
@@ -69,4 +70,6 @@ model Match {
   player1Goals    Int
   player2Goals    Int
   createdAt DateTime @default(now())
+   userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
