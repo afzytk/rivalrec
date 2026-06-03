@@ -1,20 +1,11 @@
 import { Link } from "react-router-dom";
+import Navbar from "../components/Navbar";
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-gray-900 text-white flex flex-col">
+    <div className="min-h-screen flex flex-col">
       {/* 1. NAVBAR */}
-      <nav className="flex justify-between items-center p-6 max-w-6xl mx-auto w-full">
-        <div className="text-2xl font-black text-blue-500 tracking-tighter">
-          RivalRec ⚽
-        </div>
-        <Link
-          to="/dashboard"
-          className="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2 rounded-lg font-bold transition-all"
-        >
-          Sign In
-        </Link>
-      </nav>
+      <Navbar />
 
       {/* 2. HERO SECTION */}
       <main className="flex-grow flex flex-col justify-center items-center text-center px-4 mt-16">
@@ -40,10 +31,10 @@ export default function LandingPage() {
       </main>
 
       {/* 3. FEATURES GRID */}
-      <section className="bg-gray-800 py-20 mt-24">
+      <section className="py-20 mt-24">
         <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
           <div>
-            <div className="bg-gray-900 w-16 h-16 mx-auto rounded-full flex items-center justify-center text-3xl mb-4 shadow-inner border border-gray-700">
+            <div className=" w-16 h-16 mx-auto rounded-full flex items-center justify-center text-3xl mb-4 shadow-inner border border-gray-700">
               ⚔️
             </div>
             <h3 className="text-xl font-bold mb-2">Track Every Match</h3>
@@ -77,7 +68,7 @@ export default function LandingPage() {
 
       {/* 4. FOOTER */}
       <footer className="py-8 text-center text-gray-500 border-t border-gray-800 mt-auto">
-        <p>© 2026 RivalRec. Built for eFootball Champions.</p>
+        <p>© 2026 RivalRec.</p>
       </footer>
     </div>
   );

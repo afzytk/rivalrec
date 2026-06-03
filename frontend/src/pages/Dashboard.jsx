@@ -29,15 +29,15 @@ function Dashboard() {
     window.location.reload();
   };
 
-  if (isPending) return <div className="min-h-screen bg-gray-900"></div>;
+  if (isPending) return <div className="min-h-screen"></div>;
 
   if (!session) return <Login />;
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-8">
+    <div className="min-h-screen p-8">
       {/* Header with Logout Button */}
       <div className="max-w-2xl mx-auto flex justify-between items-center mb-8">
-        <h1 className="text-4xl font-extrabold text-blue-500">RivalRec ⚽</h1>
+        <h1 className="text-4xl font-extrabold text-primary">RivalRec ⚽</h1>
         <div className="flex items-center gap-4">
           <span className="text-gray-400">
             Welcome, <strong className="text-white">{session.user.name}</strong>
