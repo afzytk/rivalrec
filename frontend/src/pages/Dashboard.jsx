@@ -46,7 +46,7 @@ function Dashboard() {
 
   const handleLogout = async () => {
     await authClient.signOut();
-    window.location.reload();
+    window.location.href = "/";
   };
 
   if (isPending) return <div className="min-h-screen"></div>;
