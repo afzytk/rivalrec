@@ -24,6 +24,26 @@ function Dashboard() {
     setMatches([newMatch, ...matches]);
   };
 
+  const handleDeleteMatch = async (matchId) => {
+    if (!window.confirm("Are you sure you want to delete this match?")) return;
+
+    try {
+      const response = await fetch(
+        `http://localhost:3000/api/matches/${matchId}`,
+        {
+          method: "DELETE",
+          credentials: "include",
+        },
+      );
+
+      if (response.ok) {
+        setMatches(matches.filter((match) => match.id !== matchId));
+      }
+    } catch (error) {
+      console.error("Failed to delete match:", error);
+    }
+  };
+
   const handleLogout = async () => {
     await authClient.signOut();
     window.location.reload();
@@ -36,15 +56,15 @@ function Dashboard() {
   return (
     <div className="min-h-screen p-8">
       {/* Header with Logout Button */}
-      <div className="max-w-2xl mx-auto flex justify-between items-center mb-8">
-        <h1 className="text-4xl font-extrabold text-primary">RivalRec ⚽</h1>
+      <div className="mx-auto mb-8 flex max-w-2xl items-center justify-between">
+        <h1 className="text-primary text-4xl font-extrabold">RivalRec ⚽</h1>
         <div className="flex items-center gap-4">
           <span className="text-gray-400">
             Welcome, <strong className="text-white">{session.user.name}</strong>
           </span>
           <button
             onClick={handleLogout}
-            className="bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white px-4 py-2 rounded transition-all cursor-pointer text-sm font-bold"
+            className="cursor-pointer rounded bg-red-500/10 px-4 py-2 text-sm font-bold text-red-500 transition-all hover:bg-red-500 hover:text-white"
           >
             Logout
           </button>
@@ -52,7 +72,7 @@ function Dashboard() {
       </div>
 
       <MatchForm onMatchAdded={handleMatchAdded} />
-      <MatchList matches={matches} />
+      <MatchList matches={matches} onDelete={handleDeleteMatch} />
     </div>
   );
 }

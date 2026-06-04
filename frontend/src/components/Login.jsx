@@ -17,7 +17,10 @@ export default function Login() {
 
   // 1. Google Login Handler
   const handleGoogleLogin = async () => {
-    await authClient.signIn.social({ provider: "google" });
+    await authClient.signIn.social({
+      provider: "google",
+      callbackURL: "http://localhost:5173/dashboard",
+    });
   };
 
   // 2. Email Login/Signup Handler
@@ -51,33 +54,33 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
-      <div className="bg-gray-800 p-8 rounded-xl shadow-2xl border border-gray-700 w-full max-w-md">
-        <h1 className="text-3xl font-black text-blue-500 mb-6 text-center">
+    <div className="flex min-h-screen items-center justify-center bg-gray-900 p-4">
+      <div className="w-full max-w-md rounded-xl border border-gray-700 bg-gray-800 p-8 shadow-2xl">
+        <h1 className="mb-6 text-center text-3xl font-black text-blue-500">
           RivalRec
         </h1>
 
         {/* Google Login Button */}
         <button
           onClick={handleGoogleLogin}
-          className="w-full bg-white text-gray-900 font-bold py-3 rounded-lg flex items-center justify-center gap-2 hover:bg-gray-200 transition-all mb-6 cursor-pointer"
+          className="mb-6 flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg bg-white py-3 font-bold text-gray-900 transition-all hover:bg-gray-200"
         >
           <img
             src="https://www.svgrepo.com/show/475656/google-color.svg"
             alt="Google"
-            className="w-5 h-5"
+            className="h-5 w-5"
           />
           Continue with Google
         </button>
 
-        <div className="flex items-center my-6">
+        <div className="my-6 flex items-center">
           <div className="flex-grow border-t border-gray-600"></div>
-          <span className="px-3 text-gray-400 text-sm">or email</span>
+          <span className="px-3 text-sm text-gray-400">or email</span>
           <div className="flex-grow border-t border-gray-600"></div>
         </div>
 
         {error && (
-          <div className="bg-red-500/20 text-red-400 p-3 rounded mb-4 text-sm text-center">
+          <div className="mb-4 rounded bg-red-500/20 p-3 text-center text-sm text-red-400">
             {error}
           </div>
         )}
@@ -93,7 +96,7 @@ export default function Login() {
                 placeholder="Full Name"
                 value={formData.name}
                 onChange={handleChange}
-                className="w-full bg-gray-900 border border-gray-700 rounded-lg p-3 text-white"
+                className="w-full rounded-lg border border-gray-700 bg-gray-900 p-3 text-white"
               />
               <input
                 required
@@ -102,7 +105,7 @@ export default function Login() {
                 placeholder="Unique Username"
                 value={formData.username}
                 onChange={handleChange}
-                className="w-full bg-gray-900 border border-gray-700 rounded-lg p-3 text-white"
+                className="w-full rounded-lg border border-gray-700 bg-gray-900 p-3 text-white"
               />
             </>
           )}
@@ -113,7 +116,7 @@ export default function Login() {
             placeholder="Email Address"
             value={formData.email}
             onChange={handleChange}
-            className="w-full bg-gray-900 border border-gray-700 rounded-lg p-3 text-white"
+            className="w-full rounded-lg border border-gray-700 bg-gray-900 p-3 text-white"
           />
           <input
             required
@@ -122,24 +125,24 @@ export default function Login() {
             placeholder="Password"
             value={formData.password}
             onChange={handleChange}
-            className="w-full bg-gray-900 border border-gray-700 rounded-lg p-3 text-white"
+            className="w-full rounded-lg border border-gray-700 bg-gray-900 p-3 text-white"
           />
 
           <button
             type="submit"
-            className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-lg transition-all cursor-pointer"
+            className="w-full cursor-pointer rounded-lg bg-blue-600 py-3 font-bold text-white transition-all hover:bg-blue-500"
           >
             {isRegistering ? "Create Account" : "Sign In"}
           </button>
         </form>
 
-        <p className="text-center text-gray-400 mt-6 text-sm">
+        <p className="mt-6 text-center text-sm text-gray-400">
           {isRegistering
             ? "Already have an account? "
             : "Don't have an account? "}
           <button
             onClick={() => setIsRegistering(!isRegistering)}
-            className="text-blue-400 hover:underline cursor-pointer"
+            className="cursor-pointer text-blue-400 hover:underline"
           >
             {isRegistering ? "Log in" : "Sign up"}
           </button>

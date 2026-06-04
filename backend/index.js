@@ -16,9 +16,8 @@ app.use(
   }),
 );
 
-app.use(express.json());
-
 app.all("/api/auth/*path", toNodeHandler(auth));
+app.use(express.json());
 
 app.get("/", (req, res) => {
   res.send("Welcome to the RivalRec API");
@@ -68,6 +67,40 @@ app.post("/api/matches", async (req, res) => {
   } catch (error) {
     console.error("Failed to create match:", error);
     res.status(500).json({ error: "Failed to create match" });
+  }
+});
+
+app.delete("/api/matches/:id", async (req, res) => {
+  try {
+    // Verify the user is logged in
+    const session = await auth.api.getSession({ headers: req.headers });
+    if (!session) return res.status(401).json({ error: "Unauthorized" });
+
+    const matchId = parseInt(req.params.id);
+
+    // Find the match to make sure it exists
+    const match = await prisma.match.findUnique({
+      where: { id: matchId },
+    });
+
+    if (!match) return res.status(404).json({ error: "Match not found" });
+
+    //  SECURITY CHECK: Does this match belong to the logged-in user?
+    if (match.userId !== session.user.id) {
+      return res
+        .status(403)
+        .json({ error: "Forbidden: You cannot delete someone else's match" });
+    }
+
+    //  Delete the match
+    await prisma.match.delete({
+      where: { id: matchId },
+    });
+
+    res.json({ message: "Match deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to delete match" });
   }
 });
 
