@@ -23,6 +23,7 @@ model User {
   sessions      Session[]
   accounts      Account[]
    matches       Match[] 
+     rivals        Rival[]
 }
 
 model Session {
@@ -63,13 +64,27 @@ model Verification {
   updatedAt  DateTime?
 }
 
-model Match {
-  id        Int      @id @default(autoincrement())
-  player1   String
-  player2   String
-  player1Goals    Int
-  player2Goals    Int
+
+model Rival {
+  id        String   @id @default(cuid())
+  name      String   
+  team      String?  
+  userId    String   
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  matches   Match[]  
   createdAt DateTime @default(now())
-   userId       String
+}
+
+
+model Match {
+  id           String   @id @default(cuid())
+  userGoals    Int     
+  rivalGoals   Int      
+  createdAt    DateTime @default(now())
+  
+  rivalId      String
+  rival        Rival    @relation(fields: [rivalId], references: [id], onDelete: Cascade)
+  
+  userId       String
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

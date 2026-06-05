@@ -2,7 +2,6 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const { toNodeHandler } = require("better-auth/node");
-
 const prisma = require("./db");
 const auth = require("./auth");
 
@@ -15,95 +14,110 @@ app.use(
     credentials: true,
   }),
 );
-
-app.all("/api/auth/*path", toNodeHandler(auth));
 app.use(express.json());
 
-app.get("/", (req, res) => {
-  res.send("Welcome to the RivalRec API");
-});
+app.all("/api/auth/*path", toNodeHandler(auth));
 
-app.get("/api/matches", async (req, res) => {
+// Fetch all your rivals
+app.get("/api/rivals", async (req, res) => {
   try {
-    const matches = await prisma.match.findMany({
-      orderBy: {
-        createdAt: "desc",
-      },
-    });
-    res.json(matches);
-  } catch (error) {
-    console.error("Database error", error);
-    res.status(500).json({ error: "failed to fetch matches" });
-  }
-});
-
-app.post("/api/matches", async (req, res) => {
-  try {
-    // Verify the user is actually logged in
     const session = await auth.api.getSession({ headers: req.headers });
     if (!session) return res.status(401).json({ error: "Unauthorized" });
 
-    const { player1, player2, player1Goals, player2Goals } = req.body;
+    const rivals = await prisma.rival.findMany({
+      where: { userId: session.user.id },
+      orderBy: { createdAt: "desc" },
+    });
+    res.json(rivals);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch rivals" });
+  }
+});
 
-    if (
-      !player1 ||
-      !player2 ||
-      player1Goals === undefined ||
-      player2Goals === undefined
-    ) {
-      return res
-        .status(400)
-        .json({ error: "Please provide players and their goals" });
-    }
+// Add a new rival
+app.post("/api/rivals", async (req, res) => {
+  try {
+    const session = await auth.api.getSession({ headers: req.headers });
+    if (!session) return res.status(401).json({ error: "Unauthorized" });
 
-    // Save the match
-    const newMatch = await prisma.match.create({
+    const { name, team } = req.body;
+    if (!name) return res.status(400).json({ error: "Rival name is required" });
+
+    const newRival = await prisma.rival.create({
       data: {
-        player1,
-        player2,
-        player1Goals: Number(player1Goals),
-        player2Goals: Number(player2Goals),
+        name,
+        team: team || null,
         userId: session.user.id,
       },
     });
+    res.status(201).json(newRival);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to create rival" });
+  }
+});
 
+// Fetch matches against ONE specific rival
+app.get("/api/rivals/:rivalId/matches", async (req, res) => {
+  try {
+    const session = await auth.api.getSession({ headers: req.headers });
+    if (!session) return res.status(401).json({ error: "Unauthorized" });
+
+    const { rivalId } = req.params;
+
+    const matches = await prisma.match.findMany({
+      where: {
+        userId: session.user.id,
+        rivalId: rivalId,
+      },
+      orderBy: { createdAt: "desc" },
+    });
+    res.json(matches);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch matches" });
+  }
+});
+
+// Log a new match against a rival
+app.post("/api/matches", async (req, res) => {
+  try {
+    const session = await auth.api.getSession({ headers: req.headers });
+    if (!session) return res.status(401).json({ error: "Unauthorized" });
+
+    const { rivalId, userGoals, rivalGoals } = req.body;
+    if (!rivalId || userGoals === undefined || rivalGoals === undefined) {
+      return res.status(400).json({ error: "Missing match data" });
+    }
+
+    const newMatch = await prisma.match.create({
+      data: {
+        userGoals: Number(userGoals),
+        rivalGoals: Number(rivalGoals),
+        rivalId,
+        userId: session.user.id,
+      },
+    });
     res.status(201).json(newMatch);
   } catch (error) {
-    console.error(error);
     res.status(500).json({ error: "Failed to create match" });
   }
 });
 
+// Delete a match
 app.delete("/api/matches/:id", async (req, res) => {
   try {
-    // Verify the user is logged in
     const session = await auth.api.getSession({ headers: req.headers });
     if (!session) return res.status(401).json({ error: "Unauthorized" });
 
-    const matchId = parseInt(req.params.id);
+    const matchId = req.params.id;
 
-    // Find the match to make sure it exists
-    const match = await prisma.match.findUnique({
-      where: { id: matchId },
-    });
-
+    const match = await prisma.match.findUnique({ where: { id: matchId } });
     if (!match) return res.status(404).json({ error: "Match not found" });
+    if (match.userId !== session.user.id)
+      return res.status(403).json({ error: "Forbidden" });
 
-    //  SECURITY CHECK: Does this match belong to the logged-in user?
-    if (match.userId !== session.user.id) {
-      return res
-        .status(403)
-        .json({ error: "Forbidden: You cannot delete someone else's match" });
-    }
-
-    //  Delete the match
-    await prisma.match.delete({
-      where: { id: matchId },
-    });
-
+    await prisma.match.delete({ where: { id: matchId } });
     res.json({ message: "Match deleted successfully" });
   } catch (error) {
-    console.error(error);
     res.status(500).json({ error: "Failed to delete match" });
   }
 });
