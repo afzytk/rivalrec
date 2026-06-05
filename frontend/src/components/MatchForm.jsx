@@ -24,6 +24,7 @@ export default function MatchForm({ onMatchAdded }) {
       const response = await fetch("http://localhost:3000/api/matches", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify(formData),
       });
 
@@ -40,9 +41,9 @@ export default function MatchForm({ onMatchAdded }) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="max-w-2xl mx-auto bg-gray-800 p-6 rounded-lg mb-8 shadow-lg border border-gray-700"
+      className="mx-auto mb-8 max-w-2xl rounded-lg border border-gray-700 bg-gray-800 p-6 shadow-lg"
     >
-      <h2 className="text-2xl font-bold mb-4">Report a Match</h2>
+      <h2 className="mb-4 text-2xl font-bold">Report a Match</h2>
 
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
@@ -53,7 +54,7 @@ export default function MatchForm({ onMatchAdded }) {
             placeholder="Player 1 Name"
             value={formData.player1}
             onChange={handleChange}
-            className="w-full bg-gray-900 border border-gray-700 rounded p-2 text-white"
+            className="w-full rounded border border-gray-700 bg-gray-900 p-2 text-white"
           />
           <input
             required
@@ -62,7 +63,7 @@ export default function MatchForm({ onMatchAdded }) {
             name="player1Goals"
             value={formData.player1Goals}
             onChange={handleChange}
-            className="w-full bg-gray-900 border border-gray-700 rounded p-2 text-white font-bold text-center text-xl"
+            className="w-full rounded border border-gray-700 bg-gray-900 p-2 text-center text-xl font-bold text-white"
           />
         </div>
 
@@ -74,7 +75,7 @@ export default function MatchForm({ onMatchAdded }) {
             placeholder="Player 2 Name"
             value={formData.player2}
             onChange={handleChange}
-            className="w-full bg-gray-900 border border-gray-700 rounded p-2 text-white"
+            className="w-full rounded border border-gray-700 bg-gray-900 p-2 text-white"
           />
           <input
             required
@@ -83,14 +84,14 @@ export default function MatchForm({ onMatchAdded }) {
             name="player2Goals"
             value={formData.player2Goals}
             onChange={handleChange}
-            className="w-full bg-gray-900 border border-gray-700 rounded p-2 text-white font-bold text-center text-xl"
+            className="w-full rounded border border-gray-700 bg-gray-900 p-2 text-center text-xl font-bold text-white"
           />
         </div>
       </div>
 
       <button
         type="submit"
-        className="w-full mt-6 bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded transition-all cursor-pointer"
+        className="mt-6 w-full cursor-pointer rounded bg-blue-600 py-3 font-bold text-white transition-all hover:bg-blue-500"
       >
         Save Match Result
       </button>

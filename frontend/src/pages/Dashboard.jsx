@@ -13,7 +13,9 @@ function Dashboard() {
   useEffect(() => {
     // Only fetch matches if the user is logged in
     if (session) {
-      fetch("http://localhost:3000/api/matches")
+      fetch("http://localhost:3000/api/matches", {
+        credentials: "include",
+      })
         .then((res) => res.json())
         .then((data) => setMatches(data))
         .catch((err) => console.error("Error fetching data:", err));

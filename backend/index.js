@@ -39,9 +39,12 @@ app.get("/api/matches", async (req, res) => {
 
 app.post("/api/matches", async (req, res) => {
   try {
+    // Verify the user is actually logged in
+    const session = await auth.api.getSession({ headers: req.headers });
+    if (!session) return res.status(401).json({ error: "Unauthorized" });
+
     const { player1, player2, player1Goals, player2Goals } = req.body;
 
-    // Validation
     if (
       !player1 ||
       !player2 ||
@@ -53,19 +56,20 @@ app.post("/api/matches", async (req, res) => {
         .json({ error: "Please provide players and their goals" });
     }
 
-    // Save to the database using Prisma
+    // Save the match
     const newMatch = await prisma.match.create({
       data: {
         player1,
         player2,
         player1Goals: Number(player1Goals),
         player2Goals: Number(player2Goals),
+        userId: session.user.id,
       },
     });
 
     res.status(201).json(newMatch);
   } catch (error) {
-    console.error("Failed to create match:", error);
+    console.error(error);
     res.status(500).json({ error: "Failed to create match" });
   }
 });
