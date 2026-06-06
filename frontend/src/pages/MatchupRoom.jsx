@@ -26,7 +26,23 @@ export default function MatchupRoom() {
     }
   }, [session, rivalId]);
 
-  // Submit a new match
+  // Match analytics
+  const totalMatches = matches.length;
+  const userWins = matches.filter((m) => m.userGoals > m.rivalGoals).length;
+  const rivalWins = matches.filter((m) => m.rivalGoals > m.userGoals).length;
+  const draws = totalMatches - userWins - rivalWins;
+
+  // Calculate who is currently leading
+  let statusText = "Tied";
+  let statusColor = "text-gray-400";
+  if (userWins > rivalWins) {
+    statusText = "You are dominating 👑";
+    statusColor = "text-green-400";
+  } else if (rivalWins > userWins) {
+    statusText = "Rival is winning 💀";
+    statusColor = "text-red-400";
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -40,14 +56,13 @@ export default function MatchupRoom() {
         const newMatch = await res.json();
         setMatches([newMatch, ...matches]);
         setUserGoals(0);
-        setRivalGoals(0); // Reset form
+        setRivalGoals(0);
       }
     } catch (error) {
       console.error(error);
     }
   };
 
-  // Delete a match
   const handleDelete = async (matchId) => {
     if (!window.confirm("Delete this match?")) return;
     try {
@@ -68,22 +83,54 @@ export default function MatchupRoom() {
 
   return (
     <div className="min-h-screen p-8">
-      <div className="mx-auto mb-8 max-w-3xl">
-        <Link
-          to="/friendlies"
-          className="text-sm font-bold tracking-widest text-gray-400 uppercase transition-all hover:text-white"
-        >
-          ← Back to Rivals
-        </Link>
-        <h1 className="mt-4 text-4xl font-extrabold text-white">
-          Matchup Room
-        </h1>
+      <div className="mx-auto mb-8 flex max-w-4xl items-end justify-between">
+        <div>
+          <Link
+            to="/friendlies"
+            className="text-sm font-bold tracking-widest text-gray-400 uppercase transition-all hover:text-white"
+          >
+            ← Back to Rivals
+          </Link>
+          <h1 className="mt-4 text-4xl font-extrabold text-white">
+            Matchup Room
+          </h1>
+        </div>
+        {/* The Dynamic Status Text */}
+        <div className={`text-xl font-black ${statusColor}`}>
+          {totalMatches > 0 ? statusText : "Ready to play"}
+        </div>
       </div>
+
+      {totalMatches > 0 && (
+        <div className="mx-auto mb-12 grid max-w-4xl grid-cols-3 gap-4">
+          <div className="glass-card p-6 text-center">
+            <p className="mb-1 text-sm font-bold tracking-widest text-gray-400 uppercase">
+              Your Wins
+            </p>
+            <p className="text-4xl font-black text-green-400">{userWins}</p>
+          </div>
+          <div className="glass-card border-t-primary border-t-2 p-6 text-center">
+            <p className="mb-1 text-sm font-bold tracking-widest text-gray-400 uppercase">
+              Total Games
+            </p>
+            <p className="text-4xl font-black text-white">{totalMatches}</p>
+            {draws > 0 && (
+              <p className="mt-2 text-xs text-gray-500">{draws} Draws</p>
+            )}
+          </div>
+          <div className="glass-card p-6 text-center">
+            <p className="mb-1 text-sm font-bold tracking-widest text-gray-400 uppercase">
+              Rival Wins
+            </p>
+            <p className="text-4xl font-black text-red-400">{rivalWins}</p>
+          </div>
+        </div>
+      )}
 
       {/* The Match Form */}
       <form
         onSubmit={handleSubmit}
-        className="glass-card mx-auto mb-12 max-w-3xl p-8"
+        className="glass-card border-primary/30 mx-auto mb-12 max-w-4xl p-8"
       >
         <h2 className="text-primary mb-6 text-center text-2xl font-bold">
           Log New Match
@@ -100,9 +147,7 @@ export default function MatchupRoom() {
               className="modern-input py-6 text-center text-4xl font-black"
             />
           </div>
-
           <div className="text-2xl font-black text-gray-600">VS</div>
-
           <div className="w-full text-center">
             <label className="mb-2 block font-bold text-gray-400">Rival</label>
             <input
@@ -121,29 +166,27 @@ export default function MatchupRoom() {
       </form>
 
       {/* Match History */}
-      <div className="mx-auto max-w-3xl space-y-4">
+      <div className="mx-auto max-w-4xl space-y-4">
         <h3 className="mb-4 text-xl font-bold text-gray-400">
           Head-to-Head History
         </h3>
         {matches.map((match) => (
           <div
             key={match.id}
-            className="glass-card group relative flex items-center justify-between p-6"
+            className="glass-card group relative flex items-center justify-between p-6 transition-colors hover:border-gray-600"
           >
-            {/* Delete Button */}
             <button
               onClick={() => handleDelete(match.id)}
-              className="absolute top-2 right-2 text-gray-500 opacity-0 transition-opacity group-hover:opacity-100 hover:text-red-500"
+              className="absolute top-2 right-2 cursor-pointer text-gray-500 opacity-0 transition-opacity group-hover:opacity-100 hover:text-red-500"
             >
               🗑️
             </button>
-
             <div
               className={`text-xl ${match.userGoals > match.rivalGoals ? "font-bold text-green-400" : "text-white"}`}
             >
               You
             </div>
-            <div className="rounded-lg border border-white/5 bg-black/50 px-6 py-2 text-3xl font-black tracking-widest">
+            <div className="rounded-lg border border-white/5 bg-black/50 px-6 py-2 text-3xl font-black tracking-widest shadow-inner">
               {match.userGoals} - {match.rivalGoals}
             </div>
             <div
@@ -154,7 +197,7 @@ export default function MatchupRoom() {
           </div>
         ))}
         {matches.length === 0 && (
-          <div className="glass-card p-8 text-center text-gray-500">
+          <div className="glass-card border-dashed border-gray-700 p-8 text-center text-gray-500">
             No matches recorded yet. Who will win the first game?
           </div>
         )}
