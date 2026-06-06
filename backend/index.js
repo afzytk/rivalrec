@@ -30,6 +30,7 @@ app.get("/api/rivals", async (req, res) => {
     });
     res.json(rivals);
   } catch (error) {
+    console.error("CRITICAL BACKEND ERROR:", error);
     res.status(500).json({ error: "Failed to fetch rivals" });
   }
 });
