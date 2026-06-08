@@ -17,13 +17,14 @@ model User {
   email         String    @unique
   emailVerified Boolean
   image         String?
-   username      String?   @unique
+  username      String?   @unique
   createdAt     DateTime
   updatedAt     DateTime
   sessions      Session[]
   accounts      Account[]
-   matches       Match[] 
-     rivals        Rival[]
+  matches       Match[] 
+  rivals        Rival[]
+  tournaments   Tournament[]
 }
 
 model Session {
@@ -87,4 +88,51 @@ model Match {
   
   userId       String
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+
+model Tournament {
+  id           String            @id @default(cuid())
+  name         String          
+  teamCount    Int               
+  status       String            @default("Pending") 
+  
+  userId       String            
+  user         User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  teams        TournamentTeam[]  
+  matches      TournamentMatch[] 
+  createdAt    DateTime          @default(now())
+}
+
+model TournamentTeam {
+  id             String            @id @default(cuid())
+  name           String
+  
+  tournamentId   String
+  tournament     Tournament        @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  matchesAsTeam1 TournamentMatch[] @relation("Team1")
+  matchesAsTeam2 TournamentMatch[] @relation("Team2")
+}
+
+model TournamentMatch {
+  id           String            @id @default(cuid())
+  round        Int               
+  position     Int              
+  team1Id      String?
+  team1        TournamentTeam?   @relation("Team1", fields: [team1Id], references: [id])
+  team1Goals   Int?
+  team2Id      String?
+  team2        TournamentTeam?   @relation("Team2", fields: [team2Id], references: [id])
+  team2Goals   Int?
+  
+  status       String            @default("Pending") 
+  
+  tournamentId String
+  tournament   Tournament        @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  
+
+  nextMatchId  String?
+  nextMatch    TournamentMatch?  @relation("BracketPath", fields: [nextMatchId], references: [id])
+  previousMatches TournamentMatch[] @relation("BracketPath")
 }
