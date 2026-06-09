@@ -123,6 +123,133 @@ app.delete("/api/matches/:id", async (req, res) => {
   }
 });
 
+app.get("/api/tournaments", async (req, res) => {
+  try {
+    const session = await auth.api.getSession({ headers: req.headers });
+    if (!session) return res.status(401).json({ error: "Unauthorized" });
+
+    const tournaments = await prisma.tournament.findMany({
+      where: { userId: session.user.id },
+      orderBy: { createdAt: "desc" },
+    });
+    res.json(tournaments);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch tournaments" });
+  }
+});
+
+app.post("/api/tournaments", async (req, res) => {
+  try {
+    const session = await auth.api.getSession({ headers: req.headers });
+    if (!session) return res.status(401).json({ error: "Unauthorized" });
+
+    const { name, type, teamCount } = req.body;
+
+    if (!name || !type || !teamCount) {
+      return res
+        .status(400)
+        .json({ error: "Please provide name, type, and team count." });
+    }
+
+    // Create the empty tournament
+    const tournament = await prisma.tournament.create({
+      data: {
+        name,
+        type,
+        teamCount: Number(teamCount),
+        userId: session.user.id,
+      },
+    });
+
+    res.status(201).json(tournament);
+  } catch (error) {
+    console.error("Failed to create tournament:", error);
+    res.status(500).json({ error: "Failed to create tournament" });
+  }
+});
+
+//  Generate the Bracket
+app.post("/api/tournaments/:id/generate", async (req, res) => {
+  try {
+    const session = await auth.api.getSession({ headers: req.headers });
+    if (!session) return res.status(401).json({ error: "Unauthorized" });
+
+    const tournamentId = req.params.id;
+    const { teams } = req.body; // Array of team names e.g., ["Barca", "Real"...]
+
+    const tournament = await prisma.tournament.findUnique({
+      where: { id: tournamentId },
+    });
+    if (!tournament || tournament.userId !== session.user.id) {
+      return res.status(403).json({ error: "Forbidden" });
+    }
+
+    // Create the Teams in the database
+    await prisma.tournamentTeam.createMany({
+      data: teams.map((name) => ({ name, tournamentId })),
+    });
+
+    // Fetch the newly created teams so we have their IDs
+    const dbTeams = await prisma.tournamentTeam.findMany({
+      where: { tournamentId },
+    });
+
+    // THE BRACKET ALGORITHM (Only runs if it's a Knockout)
+    if (tournament.type === "Knockout") {
+      const teamCount = tournament.teamCount;
+      const totalRounds = Math.log2(teamCount);
+      let previousRoundMatches = [];
+
+      for (let round = 1; round <= totalRounds; round++) {
+        const matchesInThisRound = teamCount / Math.pow(2, round);
+        let currentRoundMatches = [];
+
+        for (let position = 1; position <= matchesInThisRound; position++) {
+          let team1Id = null;
+          let team2Id = null;
+
+          if (round === 1) {
+            team1Id = dbTeams[(position - 1) * 2].id;
+            team2Id = dbTeams[(position - 1) * 2 + 1].id;
+          }
+
+          const match = await prisma.tournamentMatch.create({
+            data: { round, position, team1Id, team2Id, tournamentId },
+          });
+          currentRoundMatches.push(match);
+
+          // Auto-Advance Wiring
+          if (round > 1) {
+            const prevMatch1 = previousRoundMatches[(position - 1) * 2];
+            const prevMatch2 = previousRoundMatches[(position - 1) * 2 + 1];
+
+            await prisma.tournamentMatch.update({
+              where: { id: prevMatch1.id },
+              data: { nextMatchId: match.id },
+            });
+            await prisma.tournamentMatch.update({
+              where: { id: prevMatch2.id },
+              data: { nextMatchId: match.id },
+            });
+          }
+        }
+        previousRoundMatches = currentRoundMatches;
+      }
+    }
+
+    // Change status from "Setup" to "Active"
+    await prisma.tournament.update({
+      where: { id: tournamentId },
+      data: { status: "Active" },
+    });
+
+    res.json({ message: "Bracket generated successfully!" });
+  } catch (error) {
+    console.error("Generation failed:", error);
+    res.status(500).json({ error: "Failed to generate bracket" });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });

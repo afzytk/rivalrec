@@ -94,8 +94,10 @@ model Match {
 model Tournament {
   id           String            @id @default(cuid())
   name         String          
+  type         String            @default("Knockout") 
   teamCount    Int               
   status       String            @default("Pending") 
+  
   
   userId       String            
   user         User              @relation(fields: [userId], references: [id], onDelete: Cascade)
