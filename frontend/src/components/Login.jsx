@@ -3,6 +3,7 @@ import { authClient } from "../lib/authClient";
 
 export default function Login() {
   const [isRegistering, setIsRegistering] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -17,10 +18,17 @@ export default function Login() {
 
   // 1. Google Login Handler
   const handleGoogleLogin = async () => {
-    await authClient.signIn.social({
-      provider: "google",
-      callbackURL: "http://localhost:5173/dashboard",
-    });
+    setIsGoogleLoading(true);
+    setError("");
+    try {
+      await authClient.signIn.social({
+        provider: "google",
+        callbackURL: "http://localhost:5173/dashboard",
+      });
+    } catch (err) {
+      setIsGoogleLoading(false);
+      setError(err.message || "Failed to connect to Google.");
+    }
   };
 
   // 2. Email Login/Signup Handler
@@ -63,20 +71,27 @@ export default function Login() {
         {/* Google Login Button */}
         <button
           onClick={handleGoogleLogin}
-          className="mb-6 flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg bg-white py-3 font-bold text-gray-900 transition-all hover:bg-gray-200"
+          disabled={isGoogleLoading}
+          className="mb-6 flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg bg-white py-3 font-bold text-gray-900 transition-all hover:bg-gray-200 disabled:cursor-not-allowed disabled:opacity-70"
         >
-          <img
-            src="https://www.svgrepo.com/show/475656/google-color.svg"
-            alt="Google"
-            className="h-5 w-5"
-          />
-          Continue with Google
+          {isGoogleLoading ? (
+            <span className="animate-pulse">Connecting to Google...</span>
+          ) : (
+            <>
+              <img
+                src="https://www.svgrepo.com/show/475656/google-color.svg"
+                alt="Google"
+                className="h-5 w-5"
+              />
+              Continue with Google
+            </>
+          )}
         </button>
 
         <div className="my-6 flex items-center">
-          <div className="flex-grow border-t border-gray-600"></div>
+          <div className="grow border-t border-gray-600"></div>
           <span className="px-3 text-sm text-gray-400">or email</span>
-          <div className="flex-grow border-t border-gray-600"></div>
+          <div className="grow border-t border-gray-600"></div>
         </div>
 
         {error && (

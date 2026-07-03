@@ -3,6 +3,8 @@ import LandingPage from "./pages/LandingPage";
 import Dashboard from "./pages/Dashboard";
 import FriendliesHub from "./pages/FriendliesHub";
 import MatchupRoom from "./pages/MatchupRoom";
+import TournamentsHub from "./pages/TournamentsHub";
+import TournamentRoom from "./pages/TournamentRoom";
 
 function App() {
   return (
@@ -12,6 +14,8 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/friendlies" element={<FriendliesHub />} />
         <Route path="/friendlies/:rivalId" element={<MatchupRoom />} />
+        <Route path="/tournaments" element={<TournamentsHub />} />
+        <Route path="/tournaments/:tournamentId" element={<TournamentRoom />} />
       </Routes>
     </BrowserRouter>
   );

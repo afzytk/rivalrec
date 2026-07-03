@@ -42,6 +42,7 @@ router.post("/", async (req, res) => {
     });
     res.status(201).json(tournament);
   } catch (error) {
+    console.error("[Tournament Creation Error]:", error);
     res.status(500).json({ error: "Failed to create tournament" });
   }
 });
@@ -117,6 +118,48 @@ router.post("/:id/generate", async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to generate bracket" });
+  }
+});
+
+router.get("/:id", async (req, res) => {
+  try {
+    const session = await auth.api.getSession({ headers: req.headers });
+    if (!session) {
+      return res.status(401).json({ error: "Unauthorized access" });
+    }
+
+    const tournamentId = req.params.id;
+
+    // Eager-load the relational tree (Tournament -> Teams & Matches -> Teams)
+    const tournament = await prisma.tournament.findUnique({
+      where: { id: tournamentId },
+      include: {
+        teams: true,
+        matches: {
+          include: {
+            team1: true,
+            team2: true,
+          },
+          orderBy: [{ round: "asc" }, { position: "asc" }],
+        },
+      },
+    });
+
+    // Authorization check: Ensure the resource belongs to the authenticated user
+    if (!tournament || tournament.userId !== session.user.id) {
+      return res
+        .status(403)
+        .json({ error: "Forbidden access to external resource" });
+    }
+
+    res.json(tournament);
+  } catch (error) {
+    console.error("[Tournament Fetch Error]:", error);
+    res
+      .status(500)
+      .json({
+        error: "Internal server error while retrieving tournament state",
+      });
   }
 });
 

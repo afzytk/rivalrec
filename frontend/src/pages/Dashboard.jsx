@@ -50,13 +50,18 @@ export default function Dashboard() {
         </Link>
 
         {/* Tournaments Card */}
-        <div className="glass-card flex cursor-not-allowed flex-col items-center justify-center p-12 text-center opacity-60">
-          <div className="mb-6 text-7xl grayscale">🏆</div>
+        <Link
+          to="/tournaments"
+          className="glass-card hover:border-primary group flex cursor-pointer flex-col items-center justify-center p-12 text-center transition-all hover:scale-105"
+        >
+          <div className="mb-6 text-7xl transition-transform group-hover:scale-110">
+            🏆
+          </div>
           <h2 className="mb-3 text-3xl font-bold">Tournaments</h2>
-          <p className="text-primary mt-2 text-sm font-bold tracking-widest uppercase">
-            Coming Soon
+          <p className="text-gray-400">
+            Create custom knockout brackets and track who takes the cup.
           </p>
-        </div>
+        </Link>
       </div>
     </div>
   );
