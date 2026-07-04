@@ -43,6 +43,35 @@ export default function TournamentsHub() {
     }
   };
 
+  const handleDeleteTournament = async (e, tournamentId) => {
+    e.preventDefault();
+
+    if (
+      !window.confirm(
+        "Delete this tournament and all its match data? This cannot be undone.",
+      )
+    )
+      return;
+
+    try {
+      const res = await fetch(
+        `http://localhost:3000/api/tournaments/${tournamentId}`,
+        {
+          method: "DELETE",
+          credentials: "include",
+        },
+      );
+
+      if (res.ok) {
+        setTournaments(tournaments.filter((t) => t.id !== tournamentId));
+      } else {
+        console.error("Failed to delete tournament");
+      }
+    } catch (error) {
+      console.error("Network error:", error);
+    }
+  };
+
   if (isPending) return <div className="min-h-screen"></div>;
   if (!session) return <Login />;
 
@@ -102,6 +131,13 @@ export default function TournamentsHub() {
             to={`/tournaments/${t.id}`}
             className="glass-card hover:border-primary group block p-6 transition-all"
           >
+            <button
+              onClick={(e) => handleDeleteTournament(e, t.id)}
+              className="absolute top-4 right-4 z-10 cursor-pointer text-gray-500 opacity-0 transition-opacity group-hover:opacity-100 hover:text-red-500"
+              title="Delete Tournament"
+            >
+              🗑️
+            </button>
             <div className="mb-4 flex items-start justify-between">
               <h3 className="group-hover:text-primary text-2xl font-bold text-white transition-colors">
                 {t.name}

@@ -155,11 +155,32 @@ router.get("/:id", async (req, res) => {
     res.json(tournament);
   } catch (error) {
     console.error("[Tournament Fetch Error]:", error);
-    res
-      .status(500)
-      .json({
-        error: "Internal server error while retrieving tournament state",
-      });
+    res.status(500).json({
+      error: "Internal server error while retrieving tournament state",
+    });
+  }
+});
+
+router.delete("/:id", async (req, res) => {
+  try {
+    const session = await auth.api.getSession({ headers: req.headers });
+    if (!session) return res.status(401).json({ error: "Unauthorized" });
+
+    const tournamentId = req.params.id;
+
+    const tournament = await prisma.tournament.findUnique({
+      where: { id: tournamentId },
+    });
+    if (!tournament)
+      return res.status(404).json({ error: "Tournament not found" });
+    if (tournament.userId !== session.user.id)
+      return res.status(403).json({ error: "Forbidden" });
+
+    await prisma.tournament.delete({ where: { id: tournamentId } });
+    res.json({ message: "Tournament deleted successfully" });
+  } catch (error) {
+    console.error("[Tournament Delete Error]:", error);
+    res.status(500).json({ error: "Failed to delete tournament" });
   }
 });
 
