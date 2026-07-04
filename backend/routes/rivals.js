@@ -54,4 +54,25 @@ router.get("/:id/matches", async (req, res) => {
   }
 });
 
+router.delete("/:id", async (req, res) => {
+  try {
+    const session = await auth.api.getSession({ headers: req.headers });
+    if (!session) return res.status(401).json({ error: "Unauthorized" });
+
+    const rivalId = req.params.id;
+
+    // Security check: Ensure the rival exists and belongs to the user
+    const rival = await prisma.rival.findUnique({ where: { id: rivalId } });
+    if (!rival) return res.status(404).json({ error: "Rival not found" });
+    if (rival.userId !== session.user.id)
+      return res.status(403).json({ error: "Forbidden" });
+
+    await prisma.rival.delete({ where: { id: rivalId } });
+    res.json({ message: "Rival deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to delete rival" });
+  }
+});
+
 module.exports = router;

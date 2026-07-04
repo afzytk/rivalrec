@@ -46,6 +46,30 @@ export default function FriendliesHub() {
     }
   };
 
+  const handleDeleteRival = async (e, rivalId) => {
+    e.preventDefault();
+
+    if (
+      !window.confirm(
+        "Delete this rival? ALL matches against them will be permanently lost.",
+      )
+    )
+      return;
+
+    try {
+      const res = await fetch(`http://localhost:3000/api/rivals/${rivalId}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+
+      if (res.ok) {
+        setRivals(rivals.filter((r) => r.id !== rivalId));
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   if (isPending) return <div className="min-h-screen"></div>;
   if (!session) return <Login />;
 
@@ -102,6 +126,13 @@ export default function FriendliesHub() {
             to={`/friendlies/${rival.id}`}
             className="glass-card hover:border-primary group block cursor-pointer p-6 transition-all"
           >
+            <button
+              onClick={(e) => handleDeleteRival(e, rival.id)}
+              className="absolute top-4 right-4 z-10 text-gray-500 opacity-0 transition-opacity group-hover:opacity-100 hover:text-red-500"
+              title="Delete Rival"
+            >
+              🗑️
+            </button>
             <h3 className="group-hover:text-primary text-2xl font-bold text-white transition-colors">
               {rival.name}
             </h3>
