@@ -113,9 +113,15 @@ export default function TournamentsHub() {
             onChange={(e) => setTeamCount(Number(e.target.value))}
             className="modern-input cursor-pointer"
           >
-            <option value={4}>4 Teams</option>
-            <option value={8}>8 Teams</option>
-            <option value={16}>16 Teams</option>
+            <option value={4} className="bg-gray-900 p-2 text-white">
+              4 Teams
+            </option>
+            <option value={8} className="bg-gray-900 p-2 text-white">
+              8 Teams
+            </option>
+            <option value={16} className="bg-gray-900 p-2 text-white">
+              16 Teams
+            </option>
           </select>
         </div>
         <button type="submit" className="modern-button w-full md:w-auto">

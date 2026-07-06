@@ -184,4 +184,67 @@ router.delete("/:id", async (req, res) => {
   }
 });
 
+// PUT: Update match score and auto-advance the winner
+router.put("/:tournamentId/matches/:matchId", async (req, res) => {
+  try {
+    const session = await auth.api.getSession({ headers: req.headers });
+    if (!session) return res.status(401).json({ error: "Unauthorized" });
+
+    const { team1Goals, team2Goals } = req.body;
+    const { matchId } = req.params;
+
+    // Knockouts can't end in a draw
+    if (team1Goals === team2Goals) {
+      return res
+        .status(400)
+        .json({ error: "Knockout matches cannot end in a draw" });
+    }
+
+    // Find the current match
+    const currentMatch = await prisma.tournamentMatch.findUnique({
+      where: { id: matchId },
+    });
+
+    if (!currentMatch)
+      return res.status(404).json({ error: "Match not found" });
+
+    // Determine the winner
+    const winnerId =
+      team1Goals > team2Goals ? currentMatch.team1Id : currentMatch.team2Id;
+
+    // Update the current match with the scores
+    await prisma.tournamentMatch.update({
+      where: { id: matchId },
+      data: {
+        team1Goals: Number(team1Goals),
+        team2Goals: Number(team2Goals),
+        status: "Completed",
+      },
+    });
+
+    // THE AUTO-ADVANCE ENGINE
+    // If there is a next match, push the winner into it!
+    if (currentMatch.nextMatchId) {
+      const nextMatch = await prisma.tournamentMatch.findUnique({
+        where: { id: currentMatch.nextMatchId },
+      });
+
+      // Fill team1 slot first. If it's full, fill team2.
+      const updateData = !nextMatch.team1Id
+        ? { team1Id: winnerId }
+        : { team2Id: winnerId };
+
+      await prisma.tournamentMatch.update({
+        where: { id: currentMatch.nextMatchId },
+        data: updateData,
+      });
+    }
+
+    res.json({ message: "Score updated and winner advanced" });
+  } catch (error) {
+    console.error("[Score Update Error]:", error);
+    res.status(500).json({ error: "Failed to update match" });
+  }
+});
+
 module.exports = router;
