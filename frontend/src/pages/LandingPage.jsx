@@ -17,9 +17,9 @@ export default function LandingPage() {
         </h1>
 
         <p className="mb-10 max-w-2xl text-lg text-gray-400 md:text-xl">
-          The ultimate eFootball match tracking platform. Record scores, analyze
-          head-to-head stats, and permanently prove who is the true champion
-          among your friends.
+          The ultimate match tracking platform for online football games. Record
+          scores, analyze head-to-head stats, and permanently prove who is the
+          true champion among your friends.
         </p>
 
         <Link
