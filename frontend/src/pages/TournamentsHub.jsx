@@ -12,7 +12,9 @@ export default function TournamentsHub() {
 
   useEffect(() => {
     if (session) {
-      fetch("http://localhost:3000/api/tournaments", { credentials: "include" })
+      fetch("import.meta.env.VITE_API_URL/api/tournaments", {
+        credentials: "include",
+      })
         .then((res) => res.json())
         .then((data) => {
           if (Array.isArray(data)) setTournaments(data);
@@ -24,7 +26,7 @@ export default function TournamentsHub() {
   const handleCreate = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch("http://localhost:3000/api/tournaments", {
+      const res = await fetch("import.meta.env.VITE_API_URL/api/tournaments", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -55,7 +57,7 @@ export default function TournamentsHub() {
 
     try {
       const res = await fetch(
-        `http://localhost:3000/api/tournaments/${tournamentId}`,
+        `import.meta.env.VITE_API_URL/api/tournaments/${tournamentId}`,
         {
           method: "DELETE",
           credentials: "include",

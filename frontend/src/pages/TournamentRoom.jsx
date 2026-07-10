@@ -16,7 +16,7 @@ export default function TournamentRoom() {
 
   useEffect(() => {
     if (session && tournamentId) {
-      fetch(`http://localhost:3000/api/tournaments/${tournamentId}`, {
+      fetch(`import.meta.env.VITE_API_URL/api/tournaments/${tournamentId}`, {
         credentials: "include",
       })
         .then(async (res) => {
@@ -54,7 +54,7 @@ export default function TournamentRoom() {
 
     try {
       const res = await fetch(
-        `http://localhost:3000/api/tournaments/${tournamentId}/generate`,
+        `import.meta.env.VITE_API_URL/api/tournaments/${tournamentId}/generate`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -89,7 +89,7 @@ export default function TournamentRoom() {
 
     try {
       const res = await fetch(
-        `http://localhost:3000/api/tournaments/${tournamentId}/matches/${editingMatch.id}`,
+        `import.meta.env.VITE_API_URL/api/tournaments/${tournamentId}/matches/${editingMatch.id}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },

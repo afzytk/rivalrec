@@ -4,8 +4,8 @@ const { username } = require("better-auth/plugins");
 const prisma = require("./db");
 
 const auth = betterAuth({
-  baseURL: "http://localhost:3000",
-  trustedOrigins: ["http://localhost:5173"],
+  baseURL: process.env.BETTER_AUTH_URL || "http://localhost:3000",
+  trustedOrigins: [process.env.FRONTEND_URL || "http://localhost:5173"],
 
   database: prismaAdapter(prisma, {
     provider: "postgresql",

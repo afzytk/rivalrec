@@ -14,7 +14,7 @@ export default function MatchupRoom() {
   // Fetch matches
   useEffect(() => {
     if (session && rivalId) {
-      fetch(`http://localhost:3000/api/rivals/${rivalId}/matches`, {
+      fetch(`import.meta.env.VITE_API_URL/api/rivals/${rivalId}/matches`, {
         credentials: "include",
       })
         .then((res) => res.json())
@@ -46,7 +46,7 @@ export default function MatchupRoom() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch("http://localhost:3000/api/matches", {
+      const res = await fetch("import.meta.env.VITE_API_URL/api/matches", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -66,10 +66,13 @@ export default function MatchupRoom() {
   const handleDelete = async (matchId) => {
     if (!window.confirm("Delete this match?")) return;
     try {
-      const res = await fetch(`http://localhost:3000/api/matches/${matchId}`, {
-        method: "DELETE",
-        credentials: "include",
-      });
+      const res = await fetch(
+        `import.meta.env.VITE_API_URL/api/matches/${matchId}`,
+        {
+          method: "DELETE",
+          credentials: "include",
+        },
+      );
       if (res.ok) {
         setMatches(matches.filter((m) => m.id !== matchId));
       }

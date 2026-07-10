@@ -47,7 +47,7 @@ Create a `.env` file in the `/backend` directory:
 \`\`\`env
 DATABASE_URL="postgresql://..."
 BETTER_AUTH_SECRET="secure_random_string"
-BETTER_AUTH_URL="http://localhost:3000"
+BETTER_AUTH_URL="import.meta.env.VITE_API_URL"
 GOOGLE_CLIENT_ID="google_client_id"
 GOOGLE_CLIENT_SECRET="google_client_secret"
 \`\`\`
