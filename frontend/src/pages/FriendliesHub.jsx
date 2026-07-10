@@ -12,7 +12,7 @@ export default function FriendliesHub() {
   // Fetch Rivals securely from Express
   useEffect(() => {
     if (session) {
-      fetch("import.meta.env.VITE_API_URL/api/rivals", {
+      fetch(`${import.meta.env.VITE_API_URL}//api/rivals`, {
         credentials: "include",
       })
         .then((res) => res.json())
@@ -31,7 +31,7 @@ export default function FriendliesHub() {
   const handleAddRival = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch("import.meta.env.VITE_API_URL/api/rivals", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/rivals`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -60,7 +60,7 @@ export default function FriendliesHub() {
 
     try {
       const res = await fetch(
-        `import.meta.env.VITE_API_URL/api/rivals/${rivalId}`,
+        `${import.meta.env.VITE_API_URL}/api/rivals/${rivalId}`,
         {
           method: "DELETE",
           credentials: "include",

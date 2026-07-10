@@ -12,7 +12,7 @@ export default function TournamentsHub() {
 
   useEffect(() => {
     if (session) {
-      fetch("import.meta.env.VITE_API_URL/api/tournaments", {
+      fetch(`${import.meta.env.VITE_API_URL}/api/tournaments`, {
         credentials: "include",
       })
         .then((res) => res.json())
@@ -26,12 +26,15 @@ export default function TournamentsHub() {
   const handleCreate = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch("import.meta.env.VITE_API_URL/api/tournaments", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ name, type: "Knockout", teamCount }),
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/tournaments`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ name, type: "Knockout", teamCount }),
+        },
+      );
       if (res.ok) {
         const newTournament = await res.json();
         navigate(`/tournaments/${newTournament.id}`);
@@ -57,7 +60,7 @@ export default function TournamentsHub() {
 
     try {
       const res = await fetch(
-        `import.meta.env.VITE_API_URL/api/tournaments/${tournamentId}`,
+        `${import.meta.env.VITE_API_URL}/api/tournaments/${tournamentId}`,
         {
           method: "DELETE",
           credentials: "include",
