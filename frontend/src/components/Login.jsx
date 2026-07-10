@@ -23,7 +23,7 @@ export default function Login() {
     try {
       await authClient.signIn.social({
         provider: "google",
-        callbackURL: "http://localhost:5173/dashboard",
+        callbackURL: window.location.origin + "/dashboard",
       });
     } catch (err) {
       setIsGoogleLoading(false);
