@@ -11,6 +11,7 @@ const tournamentRoutes = require("./routes/tournaments");
 
 const app = express();
 const PORT = 3000;
+app.set("trust proxy", 1);
 
 app.use(
   cors({
