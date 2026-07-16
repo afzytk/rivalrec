@@ -67,7 +67,7 @@ export default function MatchupRoom() {
     if (!window.confirm("Delete this match?")) return;
     try {
       const res = await fetch(
-        `${import.meta.env.VITE_API_URL}//api/matches/${matchId}`,
+        `${import.meta.env.VITE_API_URL}/api/matches/${matchId}`,
         {
           method: "DELETE",
           credentials: "include",

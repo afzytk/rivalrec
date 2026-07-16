@@ -12,7 +12,7 @@ export default function FriendliesHub() {
   // Fetch Rivals securely from Express
   useEffect(() => {
     if (session) {
-      fetch(`${import.meta.env.VITE_API_URL}//api/rivals`, {
+      fetch(`${import.meta.env.VITE_API_URL}/api/rivals`, {
         credentials: "include",
       })
         .then((res) => res.json())
