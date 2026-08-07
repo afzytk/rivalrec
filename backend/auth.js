@@ -1,11 +1,14 @@
 const { betterAuth } = require("better-auth");
 const { prismaAdapter } = require("better-auth/adapters/prisma");
-const { username } = require("better-auth/plugins");
 const prisma = require("./db");
 
 const auth = betterAuth({
-  baseURL: process.env.BETTER_AUTH_URL || "http://localhost:3000",
-  trustedOrigins: [process.env.FRONTEND_URL || "http://localhost:5173"],
+  baseURL: process.env.BETTER_AUTH_URL || "https://rivalrec.vercel.app",
+  trustedOrigins: ["https://rivalrec.vercel.app", "http://localhost:5173"],
+
+  advanced: {
+    trustProxy: true,
+  },
 
   database: prismaAdapter(prisma, {
     provider: "postgresql",
@@ -23,9 +26,6 @@ const auth = betterAuth({
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     },
   },
-
-  //  Username plugin
-  plugins: [username()],
 });
 
 module.exports = auth;

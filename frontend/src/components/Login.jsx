@@ -8,7 +8,6 @@ export default function Login() {
     email: "",
     password: "",
     name: "",
-    username: "",
   });
   const [error, setError] = useState("");
 
@@ -43,7 +42,6 @@ export default function Login() {
           email: formData.email,
           password: formData.password,
           name: formData.name,
-          username: formData.username,
         });
         if (error) throw new Error(error.message);
       } else {
@@ -110,15 +108,6 @@ export default function Login() {
                 name="name"
                 placeholder="Full Name"
                 value={formData.name}
-                onChange={handleChange}
-                className="w-full rounded-lg border border-gray-700 bg-gray-900 p-3 text-white"
-              />
-              <input
-                required
-                type="text"
-                name="username"
-                placeholder="Unique Username"
-                value={formData.username}
                 onChange={handleChange}
                 className="w-full rounded-lg border border-gray-700 bg-gray-900 p-3 text-white"
               />
