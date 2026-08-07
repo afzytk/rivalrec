@@ -24,6 +24,10 @@ app.use(express.json());
 // Auth Route
 app.all("/api/auth/*path", toNodeHandler(auth));
 
+app.get("/", (req, res) => {
+  res.redirect(process.env.FRONTEND_URL || "https://rivalrec.vercel.app");
+});
+
 // Directing URLs to the correct files
 app.use("/api/matches", matchRoutes);
 app.use("/api/rivals", rivalRoutes);
