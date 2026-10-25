@@ -1,25 +1,25 @@
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
+import HowItWorks from "../components/HowItWorks";
 
 export default function LandingPage() {
   return (
     <div className="flex min-h-screen flex-col">
-      {/* 1. NAVBAR */}
+      {/* NAVBAR */}
       <Navbar />
 
-      {/* 2. HERO SECTION */}
+      {/* HERO SECTION */}
       <main className="mt-16 flex grow flex-col items-center justify-center px-4 text-center">
         <h1 className="mb-6 max-w-4xl text-5xl font-extrabold tracking-tight md:text-7xl">
-          Settle the Score. <br />
+          Track the Score. <br />
           <span className="bg-linear-to-r from-blue-400 to-blue-600 bg-clip-text text-transparent">
-            Track the Rivalry.
+            Settle the Rivalry.
           </span>
         </h1>
 
         <p className="mb-10 max-w-2xl text-lg text-gray-400 md:text-xl">
-          The ultimate match tracking platform for online football games. Record
-          scores, analyze head-to-head stats, and permanently prove who is the
-          true champion among your friends.
+          The ultimate match tracking platform for online football games.
         </p>
 
         <Link
@@ -30,7 +30,7 @@ export default function LandingPage() {
         </Link>
       </main>
 
-      {/* 3. FEATURES GRID */}
+      {/* FEATURES GRID */}
       <section className="mt-24 py-20">
         <div className="mx-auto grid max-w-6xl grid-cols-1 gap-12 px-6 text-center md:grid-cols-3">
           <div>
@@ -38,7 +38,7 @@ export default function LandingPage() {
               ⚔️
             </div>
             <h3 className="mb-2 text-xl font-bold">Track Every Match</h3>
-            <p className="text-gray-400">
+            <p className="text-slate-600">
               Instantly log goals and opponents. Never argue about who won last
               week again.
             </p>
@@ -48,7 +48,7 @@ export default function LandingPage() {
               📊
             </div>
             <h3 className="mb-2 text-xl font-bold">Advanced Analytics</h3>
-            <p className="text-gray-400">
+            <p className="text-slate-600">
               See your exact win rate, total goals scored, and historical
               performance.
             </p>
@@ -58,7 +58,7 @@ export default function LandingPage() {
               🏆
             </div>
             <h3 className="mb-2 text-xl font-bold">Head-to-Head</h3>
-            <p className="text-gray-400">
+            <p className="text-slate-600">
               Filter stats by specific friends to see who truly dominates the
               matchup.
             </p>
@@ -66,10 +66,11 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* 4. FOOTER */}
-      <footer className="mt-auto border-t border-gray-800 py-8 text-center text-gray-500">
-        <p>© 2026 RivalRec.</p>
-      </footer>
+      {/* How it Works*/}
+      <HowItWorks />
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }
